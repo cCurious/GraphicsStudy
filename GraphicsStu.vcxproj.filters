@@ -28,6 +28,9 @@
     <Filter Include="inc\KHR">
       <UniqueIdentifier>{6879c607-ab54-4c22-a7a7-0687126c4a0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="inc\stb">
+      <UniqueIdentifier>{004355f7-c216-45c4-940f-e008bda4cd93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\glad\glad.h">
@@ -41,6 +44,15 @@
     </ClInclude>
     <ClInclude Include="inc\KHR\khrplatform.h">
       <Filter>inc\KHR</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\stb\stb_image.h">
+      <Filter>inc\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\stb\stb_image_resize.h">
+      <Filter>inc\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\stb\stb_image_write.h">
+      <Filter>inc\stb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

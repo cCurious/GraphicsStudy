@@ -151,6 +151,9 @@
     <ClInclude Include="inc\GLFW\glfw3.h" />
     <ClInclude Include="inc\GLFW\glfw3native.h" />
     <ClInclude Include="inc\KHR\khrplatform.h" />
+    <ClInclude Include="inc\stb\stb_image.h" />
+    <ClInclude Include="inc\stb\stb_image_resize.h" />
+    <ClInclude Include="inc\stb\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
