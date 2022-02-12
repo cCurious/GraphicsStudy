@@ -1,4 +1,5 @@
 #ifdef OPENGL_TEST
+#include <vector>
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 #define STB_IMAGE_IMPLEMENTATION
@@ -44,6 +45,44 @@ GLuint LoadTexture(std::string texturePath)
 	}
 	return 0;
 }
+
+/*task 对函数进行封装，以此为参考，接口和类名可适当调整，
+并将封装后的代码替换正文*/
+// 创建shader  将83-103封装
+GLuint createShader(GLuint type, const char* src) { return 0; }
+GLuint createProgram(const std::vector<GLuint>& shaders) { return 0; }
+void deleteShaders(const std::vector<GLuint>& shaders) {}
+struct VertexLayoutElement {
+    GLuint layoutIndex; //对应glsl中location的值
+    GLint size; //基础数据类型个数
+    GLenum type;
+    bool normalized; //是否归一化
+    GLsizei stride; //该元素在内存中相邻两次出现之间的间隔
+    unsigned int offset; //单次出现相对起始位置的偏移量
+    int attributeDivisor = 0; //added for instanced render
+};
+using VertexBufferLayout = std::vector<VertexLayoutElement>;
+struct VertexHandle {
+    GLuint vao;
+    GLuint vbo;
+    GLuint ebo;
+};
+struct VertexDataCreateInfo {
+    GLenum bufType; //GL_ARRAY_BUFFER
+    void* vertice = nullptr;
+    GLint vertexCount = 0;
+    GLint vertexSiz = 0;
+    void* indice = nullptr;
+    GLint indiceCount = 0;
+    GLint indiceSiz = 0;
+    GLenum drawUsage; //GL_STATIC_DRAW
+    VertexBufferLayout layout;
+};
+//封装vao创建那一段
+VertexHandle createHandle(const VertexDataCreateInfo& vd) { return VertexHandle(); }
+void deleteHandle(const VertexHandle& hd) {}
+
+
 //主函数
 int main()
 {
@@ -136,7 +175,6 @@ int main()
 	glAttachShader(shaderPragram, vertexShaderId);
 	glAttachShader(shaderPragram, fragmentShaderId);
 	glLinkProgram(shaderPragram);
-	glGetProgramiv(shaderPragram, GL_LINK_STATUS, &success);
 	glGetProgramiv(shaderPragram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderPragram, 512, NULL, infoLog);
