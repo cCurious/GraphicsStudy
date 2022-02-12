@@ -46,7 +46,7 @@ GLuint LoadTexture(std::string texturePath)
 	return 0;
 }
 
-/*task 对函数进行封装，以此为参考，接口和类名可适当调整，
+/*task 对函数进行封装，以此为参考，接口和类可适当调整，
 并将封装后的代码替换正文*/
 // 创建shader  将83-103封装
 GLuint createShader(GLuint type, const char* src) { return 0; }
