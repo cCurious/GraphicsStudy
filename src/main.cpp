@@ -5,6 +5,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <fstream>
+#include <sstream>
 using namespace std;
 //设置窗口的宽和高
 const unsigned int SCR_WIDTH = 800;
@@ -60,7 +65,7 @@ GLuint createShader(GLuint type, const char* src)
 	if (!success)
 	{
 		glGetShaderInfoLog(shaderID, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
 		return 0;
 	}
 	return shaderID;
@@ -172,21 +177,22 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+
+	std::string vertexShaderSource;
+	std::string fragmentShaderYellowSrc;
+
+	std::stringstream vertexShaderStream;
+	std::stringstream fragmentShaderStream;
+	std::ifstream inFile;
+	inFile.open(R"(shader\TaskShader.vert)");
+	vertexShaderStream << inFile.rdbuf();
+	vertexShaderSource = vertexShaderStream.str();
+	inFile.close();
 	
-	//顶点着色器
-	const char* vertexShaderSource = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"  //位置属性0
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos,1.0f);\n"
-		"}\0";
-	//黄色片段着色器
-	const char* fragmentShaderYellowSrc = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"void main()\n"
-		"{\n"
-		"	FragColor = vec4(1.0f,1.0f,0.0f,1.0f);\n"
-		"}\n";
+	inFile.open(R"(shader\TaskShader.frag)");
+	fragmentShaderStream << inFile.rdbuf();
+	fragmentShaderYellowSrc = fragmentShaderStream.str();
+	inFile.close();
 
 	float firstTriangle[] = {		
 		-0.9f, -0.5f,  0.0f,  // left 
@@ -201,8 +207,8 @@ int main()
 	};
 	
 	std::vector<GLuint> shaders;
-	GLuint vertexShader = createShader(GL_VERTEX_SHADER,vertexShaderSource);
-	GLuint yellowFragmentShader = createShader(GL_FRAGMENT_SHADER,fragmentShaderYellowSrc);
+	GLuint vertexShader = createShader(GL_VERTEX_SHADER,vertexShaderSource.c_str());
+	GLuint yellowFragmentShader = createShader(GL_FRAGMENT_SHADER,fragmentShaderYellowSrc.c_str());
 	shaders.push_back(vertexShader);
 	shaders.push_back(yellowFragmentShader);
 	GLuint shaderPragram = createProgram(shaders);

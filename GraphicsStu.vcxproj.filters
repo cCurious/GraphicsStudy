@@ -31,6 +31,9 @@
     <Filter Include="inc\stb">
       <UniqueIdentifier>{004355f7-c216-45c4-940f-e008bda4cd93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{709f31c9-0127-4162-868e-70be31550356}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\glad\glad.h">
@@ -62,5 +65,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\TaskShader.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\TaskShader.vert">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
