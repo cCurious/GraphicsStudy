@@ -203,10 +203,11 @@ int main()
 	{
 		//位置               颜色
 		{-0.5f,0.0f,0.0f,   1.0f,0.0f,0.0f},  //0
-		{0.5f,0.0f,0.0f,    1.0f,1.0f,0.0f},  //1
-		{0.0f,0.0f,-0.5f,   0.0f,1.0f,0.0f}, //2  
-		{0.0f,1.0f,-0.5f,   0.0f,0.0f,1.0f}  //3
+		{0.5f,0.0f,0.0f,    0.0f,1.0f,0.0f},  //1
+		{0.0f,0.0f,-0.5f,   0.0f,0.0f,1.0f}, //2  
+		{0.0f,1.0f,-0.5f,   0.0f,1.0f,1.0f}  //3
 	};
+
 	int index[] = 
 	{
 		0,1,3,
@@ -241,11 +242,11 @@ int main()
 
 	VertexLayoutElement colorElement;
 	colorElement.layoutIndex = 1; //glsl中location = 1
-	vertexElement.normalized = GL_FALSE;
-	vertexElement.offset = 3;  //前三个是坐标，从3开始才变成颜色
-	vertexElement.size = 3;
-	vertexElement.stride = 6 * sizeof(float);
-	vertexElement.type = GL_FLOAT;
+	colorElement.normalized = GL_FALSE;
+	colorElement.offset = 3;  //前三个是坐标，从3开始才变成颜色
+	colorElement.size = 3;
+	colorElement.stride = 6 * sizeof(float);
+	colorElement.type = GL_FLOAT;
 	dataInfo.layout.push_back(std::move(vertexElement));
 	dataInfo.layout.push_back(std::move(colorElement));
 	VertexHandle handle = createHandle(dataInfo);
