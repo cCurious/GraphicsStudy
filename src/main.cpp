@@ -137,11 +137,11 @@ VertexHandle createHandle(const VertexDataCreateInfo& vd)
 	glBindBuffer(vd.bufType,handle.vbo); //初始化vbo
 	glBufferData(vd.bufType,vd.vertexSiz,vd.vertice,vd.drawUsage); //buffer数据传输进显卡之后，就可以初始化顶点信息了
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle.ebo);//初始化ebo
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vd.indiceSiz, vd.indice, vd.drawUsage); //buffer数据传输进显卡之后，就可以初始化顶点信息了
-	for (auto iter : vd.layout)
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vd.indiceSiz, vd.indice, vd.drawUsage); 
+	for (const auto &iter : vd.layout)
 	{
 		//解析顶点数据
-		glVertexAttribPointer(iter.layoutIndex,iter.size,iter.type,iter.normalized,iter.stride,0);
+		glVertexAttribPointer(iter.layoutIndex,iter.size,iter.type,iter.normalized,iter.stride,(void*)(iter.offset * sizeof(iter.type)));
 		glEnableVertexAttribArray(iter.layoutIndex);
 	}
 	return handle; 
@@ -199,13 +199,20 @@ int main()
         - 0.0f, -0.5f, 0.0f,  // right
         - 0.45f, 0.5f, 0.0f // top 
 	};
-	float secondTriangle[] = {
-		//顶点				//位置
-		 0.0f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f,  // left
-		 0.9f, -0.5f, 0.0f,0.0f, 1.0f, 0.0f,  // right
-         0.45f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f  // top 
+	float triangleVer[][6] = 
+	{
+		//位置               颜色
+		{-0.5f,0.0f,0.0f,   1.0f,0.0f,0.0f},  //0
+		{0.5f,0.0f,0.0f,    1.0f,1.0f,0.0f},  //1
+		{0.0f,0.0f,-0.5f,   0.0f,1.0f,0.0f}, //2  
+		{0.0f,1.0f,-0.5f,   0.0f,0.0f,1.0f}  //3
 	};
-	
+	int index[] = 
+	{
+		0,1,3,
+		0,2,3,
+		1,2,3
+	};
 	std::vector<GLuint> shaders;
 	GLuint vertexShader = createShader(GL_VERTEX_SHADER,vertexShaderSource.c_str());
 	GLuint yellowFragmentShader = createShader(GL_FRAGMENT_SHADER,fragmentShaderYellowSrc.c_str());
@@ -216,28 +223,31 @@ int main()
 
 	VertexDataCreateInfo dataInfo;
 	dataInfo.bufType = GL_ARRAY_BUFFER;
-	dataInfo.vertice = firstTriangle;
-	dataInfo.vertexSiz = sizeof(firstTriangle);
-	dataInfo.vertexCount = sizeof(firstTriangle)/sizeof(float);
+	dataInfo.vertice = triangleVer;
+	dataInfo.vertexSiz = sizeof(triangleVer);
+	dataInfo.vertexCount = sizeof(triangleVer)/sizeof(float);
 	dataInfo.drawUsage = GL_STATIC_DRAW;
+	dataInfo.indice = index;
+	dataInfo.indiceSiz = sizeof(index);
+	dataInfo.indiceCount = sizeof(index)/sizeof(float);
+
 	VertexLayoutElement vertexElement;
 	vertexElement.layoutIndex = 0;
-	vertexElement.normalized = false;
+	vertexElement.normalized = GL_FALSE;
 	vertexElement.offset = 0;
-	vertexElement.size = 3;
-	vertexElement.stride = 3 * sizeof(float);
+	vertexElement.size = 3; //基础数据的个数
+	vertexElement.stride = 6 * sizeof(float);
 	vertexElement.type = GL_FLOAT;
 
-	/*VertexLayoutElement colorElement;
-	vertexElement.layoutIndex = 1;
-	vertexElement.normalized = false;
-	vertexElement.offset = 3;
+	VertexLayoutElement colorElement;
+	colorElement.layoutIndex = 1; //glsl中location = 1
+	vertexElement.normalized = GL_FALSE;
+	vertexElement.offset = 3;  //前三个是坐标，从3开始才变成颜色
 	vertexElement.size = 3;
-	vertexElement.stride = 3;
-	vertexElement.type = GL_FLOAT;*/
-
+	vertexElement.stride = 6 * sizeof(float);
+	vertexElement.type = GL_FLOAT;
 	dataInfo.layout.push_back(std::move(vertexElement));
-	//dataInfo.layout.push_back(std::move(colorElement));
+	dataInfo.layout.push_back(std::move(colorElement));
 	VertexHandle handle = createHandle(dataInfo);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -246,10 +256,20 @@ int main()
 		//每次重回背景
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glm::mat4 translate;
+		translate = glm::translate(translate,glm::vec3(0.0f,0.0f,0.0f));
+		GLuint transformLoc = glGetUniformLocation(shaderPragram,"transform");
+		glUniformMatrix4fv(transformLoc,1,GL_FALSE,glm::value_ptr(translate));
+
+		glm::mat4 model;
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-45.0f),glm::vec3(1.0f,0.0f,0.0f));
+		GLuint modelLoc = glGetUniformLocation(shaderPragram,"rotate");
+		glUniformMatrix4fv(modelLoc,1,GL_FALSE,glm::value_ptr(model));
 
 		glBindVertexArray(handle.vao);
 		glUseProgram(shaderPragram);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLE_STRIP,9, GL_UNSIGNED_INT,0);
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
